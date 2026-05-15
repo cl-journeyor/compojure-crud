@@ -38,5 +38,7 @@
 (def app
   (-> app-routes
       (wrap-defaults site-defaults)
-      (cors/wrap-cors :access-control-allow-origin #"http://localhost:8080" ; Modify as desired.
+
+      ;; Modify origin as desired.
+      (cors/wrap-cors :access-control-allow-origin #"http://localhost:8080"
                       :access-control-allow-methods [:get :put :post :delete])))
