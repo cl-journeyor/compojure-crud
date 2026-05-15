@@ -2,6 +2,7 @@
   (:require [compojure.core :refer :all]
             [compojure.route :as route]
             [ring.middleware.anti-forgery :as antif]
+            [ring.middleware.cors :as cors]
             [ring.middleware.defaults :refer [wrap-defaults site-defaults]]
             [cheshire.core :as json]
             [compojure-crud.config :as cfg]
@@ -35,4 +36,7 @@
   (route/not-found "Not Found"))
 
 (def app
-  (wrap-defaults app-routes site-defaults))
+  (-> app-routes
+      (wrap-defaults site-defaults)
+      (cors/wrap-cors :access-control-allow-origin #"http://localhost:8080" ; Modify as desired.
+                      :access-control-allow-methods [:get :put :post :delete])))

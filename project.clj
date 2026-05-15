@@ -6,6 +6,7 @@
   :dependencies [[org.clojure/clojure "1.12.3"]
                  [compojure "1.6.1"]
                  [ring/ring-defaults "0.3.2"]
+                 [ring-cors/ring-cors "0.1.13"]
                  [cheshire/cheshire "6.2.0"]
                  [com.zaxxer/HikariCP "7.0.2"]
                  [org.postgresql/postgresql "42.7.11"]]
