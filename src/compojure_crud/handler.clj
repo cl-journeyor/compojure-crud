@@ -10,20 +10,24 @@
             [compojure-crud.validators :as v]
             [jnorlib-db.core :as db]))
 
+(def get-token
+  (GET "/token"
+    []
+    (json/encode {:token antif/*anti-forgery-token*})))
+
 (def fetch-page
   (GET "/"
     [page]
     (let [page-num (v/get-int page 1)
           page-size 10
-          mng (db/manager (cfg/new-ds))
+          mng (db/manager cfg/ds)
           sql (str
                "select * from employees"
                " order by id"
                " limit " page-size
                " offset " (* (- page-num 1) page-size))]
       (try
-        (json/encode {:token antif/*anti-forgery-token*
-                      :employees (db/exec-query! mng sql #{:id
+        (json/encode {:employees (db/exec-query! mng sql #{:id
                                                            :name
                                                            :role
                                                            :salary
@@ -33,6 +37,7 @@
 
 (defroutes app-routes
   fetch-page
+  get-token
   (route/not-found "Not Found"))
 
 (def app
