@@ -1,0 +1,14 @@
+.column-label {
+    font-weight: bold;
+}
+
+.employee-row {
+    border-top: black 1px solid;
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr 1fr 1fr 1fr 1fr;
+}
+
+.label-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr 1fr 1fr 1fr 1fr;
+}

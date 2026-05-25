@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+    <html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Company</title>
+        <link rel="stylesheet" href="index.css">
+        <link rel="stylesheet" href="style.css">
+        <script src="https://cdn.jsdelivr.net/npm/scittle@0.6.15/dist/scittle.js"></script>
+    </head>
+    <body>
+        <a href="employee-form/index.html">Insert employee</a>
+        <div id="table">
+            <div class="label-row">
+                <div class="column-label">id</div>
+                <div class="column-label">name</div>
+                <div class="column-label">role</div>
+                <div class="column-label">salary</div>
+                <div class="column-label">added_date</div>
+                <div class="column-label"></div>
+                <div class="column-label"></div>
+            </div>
+            <!-- SERVER RESULTS -->
+        </div>
+        <label>
+            Page:
+            <input id="page-number" type="number">
+        </label>
+    </body>
+    <script type="application/x-scittle" src="utils.cljs"></script>
+    <script type="application/x-scittle" src="core.cljs"></script>
+</html>

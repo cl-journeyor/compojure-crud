@@ -4,6 +4,7 @@
             [ring.middleware.anti-forgery :as antif]
             [ring.middleware.cors :as cors]
             [ring.middleware.defaults :refer [wrap-defaults site-defaults]]
+            [ring.util.response :as resp]
             [cheshire.core :as json]
             [compojure-crud.config :as cfg]
             [compojure-crud.responses :as ress]
@@ -11,12 +12,12 @@
             [jnorlib-db.core :as db]))
 
 (def get-token
-  (GET "/token"
+  (GET "/api/token"
     []
-    (json/encode {:token antif/*anti-forgery-token*})))
+    (json/encode {:X-CSRF-Token antif/*anti-forgery-token*})))
 
 (def fetch-page
-  (GET "/"
+  (GET "/api"
     [page]
     (let [page-num (v/get-int page 1)
           page-size 10
@@ -36,15 +37,18 @@
         (finally (.close mng))))))
 
 (def insert-employee
-  (POST "/"
-    req
-    :TODO))
-; (:params req)
+  (POST "/api"
+    request
+    (do
+      (println (:params request))
+      (ress/ok)))) ; FIXME: Fix either at back or front.
 
 (defroutes app-routes
   get-token
   fetch-page
   insert-employee
+  (GET "/" [] (resp/redirect "/index.html"))
+  (route/resources "/")
   (route/not-found "Not Found"))
 
 (def app
@@ -52,5 +56,5 @@
       (wrap-defaults site-defaults)
 
       ;; Modify origin as desired.
-      (cors/wrap-cors :access-control-allow-origin #"http://localhost:8080"
+      #_(cors/wrap-cors :access-control-allow-origin #"http://localhost:8080"
                       :access-control-allow-methods [:get :put :post :delete])))
