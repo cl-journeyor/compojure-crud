@@ -35,9 +35,16 @@
         (catch Exception e (ress/internal-server-error! e))
         (finally (.close mng))))))
 
+(def insert-employee
+  (POST "/"
+    req
+    :TODO))
+; (:params req)
+
 (defroutes app-routes
-  fetch-page
   get-token
+  fetch-page
+  insert-employee
   (route/not-found "Not Found"))
 
 (def app
