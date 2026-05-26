@@ -2,14 +2,18 @@
   (:require [compojure.core :refer :all]
             [compojure.route :as route]
             [ring.middleware.anti-forgery :as antif]
-            [ring.middleware.cors :as cors]
             [ring.middleware.defaults :refer [wrap-defaults site-defaults]]
             [ring.util.response :as resp]
             [cheshire.core :as json]
+            [misc.core :as misc]
             [compojure-crud.config :as cfg]
             [compojure-crud.responses :as ress]
             [compojure-crud.validators :as v]
-            [jnorlib-db.core :as db]))
+            [jnorlib-db.core :as db])
+  (:import [java.math BigDecimal]
+           [java.sql Date]
+           [java.time LocalDate]
+           [java.util Objects]))
 
 (def get-token
   (GET "/api/token"
@@ -39,9 +43,23 @@
 (def insert-employee
   (POST "/api"
     request
-    (do
-      (println (:params request))
-      (ress/ok)))) ; FIXME: Fix either at back or front.
+    (if-let [req (misc/try-convert-vals
+                  (:params request)
+                  {:name #(Objects/requireNonNull %)
+                   :role #(Objects/requireNonNull %)
+                   :salary #(BigDecimal. %)})]
+      (let [mng (db/manager cfg/ds)
+            sql (str
+                 "insert into employees"
+                 " values (default, ?, ?, ?, ?)")]
+        (try
+          (db/exec! mng sql [(:name req)
+                             (:role req)
+                             (:salary req)
+                             (Date/valueOf (LocalDate/now))])
+          (ress/ok)
+          (catch Exception e (ress/internal-server-error! e))))
+      (ress/bad-request))))
 
 (defroutes app-routes
   get-token
@@ -54,7 +72,8 @@
 (def app
   (-> app-routes
       (wrap-defaults site-defaults)
+      #_(ring.middleware.cors/wrap-cors :access-control-allow-origin
+                                      #"http://localhost:8080"
 
-      ;; Modify origin as desired.
-      #_(cors/wrap-cors :access-control-allow-origin #"http://localhost:8080"
-                      :access-control-allow-methods [:get :put :post :delete])))
+                                      :access-control-allow-methods
+                                      [:get :put :post :delete])))
