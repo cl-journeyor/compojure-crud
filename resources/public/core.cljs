@@ -52,7 +52,7 @@
                      (.appendChild delete-btn))]
             row (let [form (new-elem "form")]
                   (set! (.-className form) "employee-row")
-                  (set! (.-action form) "employee-form")
+                  (set! (.-action form) "employee-form/index.html")
                   form)]
         (doseq [cell cells]
           (.appendChild row cell))

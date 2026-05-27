@@ -61,10 +61,53 @@
           (catch Exception e (ress/internal-server-error! e))))
       (ress/bad-request))))
 
+(def update-employee
+  (PUT "/api"
+    request
+    (if-let [req (misc/try-convert-vals
+                  (:params request)
+                  {:id #(Long/parseLong %)
+                   :name #(Objects/requireNonNull %)
+                   :role #(Objects/requireNonNull %)
+                   :salary #(BigDecimal. %)})]
+      (let [mng (db/manager cfg/ds)
+            sql (str
+                 "update employees set"
+                 " name = ?,"
+                 " role = ?,"
+                 " salary = ?"
+                 " where id = ?")]
+        (try
+          (db/exec! mng sql [(:name req)
+                             (:role req)
+                             (:salary req)
+                             (:id req)])
+          (ress/ok)
+          (catch Exception e (ress/internal-server-error! e))))
+      (ress/bad-request))))
+
+(def delete-employee
+  (DELETE "/api"
+    request
+    (if-let [req (misc/try-convert-vals
+                  (:params request)
+                  {:id #(Long/parseLong %)})]
+      (let [mng (db/manager cfg/ds)
+            sql (str
+                 "delete from employees"
+                 " where id = ?")]
+        (try
+          (db/exec! mng sql [(:id req)])
+          (ress/ok)
+          (catch Exception e (ress/internal-server-error! e))))
+      (ress/bad-request))))
+
 (defroutes app-routes
   get-token
   fetch-page
   insert-employee
+  update-employee
+  delete-employee
   (GET "/" [] (resp/redirect "/index.html"))
   (route/resources "/")
   (route/not-found "Not Found"))
